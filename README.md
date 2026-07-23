@@ -7,6 +7,13 @@ Built with the **Homey Python Apps SDK (v3)**.
 Not affiliated with or endorsed by Lymow. It talks to Lymow's AWS backend by
 reverse-engineering the official app, and may break if that backend changes.
 
+[![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-db61a2?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/johndellarciprete)
+[![PayPal](https://img.shields.io/badge/PayPal-Donate-003087?logo=paypal&logoColor=white)](https://www.paypal.com/ncp/payment/G2KL8VSBQJUYA)
+[![Venmo](https://img.shields.io/badge/Venmo-Pay-3D95CE?logo=venmo&logoColor=white)](https://venmo.com/John-DellArciprete?txn=pay&amount=10)
+
+If this app is useful to you, consider [**sponsoring or donating**](#support-this-project) — it's
+built and maintained on my own time.
+
 ## What it does (v1 — core control)
 
 - **Pairing** with your Lymow account: email/password **or** Google.
@@ -91,3 +98,14 @@ protobuf round-trip; with credentials it does a full live login → device list 
 LYMOW_EMAIL=you@example.com LYMOW_PASSWORD=... LYMOW_REGION=us-east-2 \
   python -m lymow._selftest
 ```
+
+## Support this project
+
+This is an unofficial, spare-time project. If it saves you some money or makes your mower more
+useful, a small contribution helps keep it maintained — thank you!
+
+- ❤️ **GitHub Sponsors:** https://github.com/sponsors/johndellarciprete
+- 💙 **PayPal:** https://www.paypal.com/ncp/payment/G2KL8VSBQJUYA
+- 💸 **Venmo:** https://venmo.com/John-DellArciprete?txn=pay&amount=10
+
+(There's a **Sponsor** button at the top of this repository too.)
