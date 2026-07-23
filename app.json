@@ -1,0 +1,1115 @@
+{
+  "id": "com.dellarciprete.lymow",
+  "version": "0.1.0",
+  "compatibility": ">=13.0.0",
+  "sdk": 3,
+  "runtime": "python",
+  "pythonVersion": "3.13",
+  "platforms": [
+    "local"
+  ],
+  "name": {
+    "en": "Lymow"
+  },
+  "description": {
+    "en": "Control and monitor your Lymow robot lawn mower."
+  },
+  "category": [
+    "appliances"
+  ],
+  "permissions": [],
+  "author": {
+    "name": "John Dell'Arciprete"
+  },
+  "brandColor": "#3BA55C",
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
+  },
+  "capabilities": {
+    "lymow_status": {
+      "type": "enum",
+      "title": {
+        "en": "Status"
+      },
+      "uiComponent": "sensor",
+      "icon": "/assets/icon.svg",
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "values": [
+        {
+          "id": "mowing",
+          "title": {
+            "en": "Mowing"
+          }
+        },
+        {
+          "id": "paused",
+          "title": {
+            "en": "Paused"
+          }
+        },
+        {
+          "id": "docked",
+          "title": {
+            "en": "Docked"
+          }
+        },
+        {
+          "id": "returning",
+          "title": {
+            "en": "Returning"
+          }
+        },
+        {
+          "id": "error",
+          "title": {
+            "en": "Error"
+          }
+        },
+        {
+          "id": "offline",
+          "title": {
+            "en": "Offline"
+          }
+        },
+        {
+          "id": "unknown",
+          "title": {
+            "en": "Unknown"
+          }
+        }
+      ]
+    },
+    "lymow_online": {
+      "type": "boolean",
+      "title": {
+        "en": "Online"
+      },
+      "uiComponent": "sensor",
+      "icon": "/assets/icons/online.svg",
+      "getable": true,
+      "setable": false,
+      "insights": true
+    },
+    "lymow_error": {
+      "type": "string",
+      "title": {
+        "en": "Error / Warning"
+      },
+      "uiComponent": "sensor",
+      "icon": "/assets/icons/error.svg",
+      "getable": true,
+      "setable": false,
+      "insights": false
+    },
+    "lymow_rtk": {
+      "type": "enum",
+      "title": {
+        "en": "RTK / GPS Fix"
+      },
+      "uiComponent": "sensor",
+      "icon": "/assets/icons/rtk.svg",
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "values": [
+        {
+          "id": "not_ready",
+          "title": {
+            "en": "Not Ready"
+          }
+        },
+        {
+          "id": "float_fix",
+          "title": {
+            "en": "Float Fix"
+          }
+        },
+        {
+          "id": "fixed",
+          "title": {
+            "en": "Fixed"
+          }
+        }
+      ]
+    },
+    "cmd_start": {
+      "type": "boolean",
+      "title": {
+        "en": "Start / Resume"
+      },
+      "uiComponent": "button",
+      "icon": "/assets/icons/start.svg",
+      "getable": false,
+      "setable": true
+    },
+    "cmd_pause": {
+      "type": "boolean",
+      "title": {
+        "en": "Pause"
+      },
+      "uiComponent": "button",
+      "icon": "/assets/icons/pause.svg",
+      "getable": false,
+      "setable": true
+    },
+    "cmd_dock": {
+      "type": "boolean",
+      "title": {
+        "en": "Return to Dock"
+      },
+      "uiComponent": "button",
+      "icon": "/assets/icons/dock.svg",
+      "getable": false,
+      "setable": true
+    },
+    "cmd_stop": {
+      "type": "boolean",
+      "title": {
+        "en": "Stop (Cancel Task)"
+      },
+      "uiComponent": "button",
+      "icon": "/assets/icons/stop.svg",
+      "getable": false,
+      "setable": true
+    },
+    "lymow_mow_mode": {
+      "type": "enum",
+      "title": {
+        "en": "Mow Mode"
+      },
+      "uiComponent": "picker",
+      "icon": "/assets/icons/mowmode.svg",
+      "getable": true,
+      "setable": true,
+      "values": [
+        {
+          "id": "zigzag",
+          "title": {
+            "en": "Zigzag"
+          }
+        },
+        {
+          "id": "chess",
+          "title": {
+            "en": "Chessboard"
+          }
+        },
+        {
+          "id": "perimeter",
+          "title": {
+            "en": "Perimeter only"
+          }
+        },
+        {
+          "id": "adaptive",
+          "title": {
+            "en": "Adaptive zigzag"
+          }
+        }
+      ]
+    },
+    "lymow_volume": {
+      "type": "enum",
+      "title": {
+        "en": "Speaker Volume"
+      },
+      "uiComponent": "picker",
+      "icon": "/assets/icons/volume.svg",
+      "getable": true,
+      "setable": true,
+      "values": [
+        {
+          "id": "mute",
+          "title": {
+            "en": "Mute"
+          }
+        },
+        {
+          "id": "low",
+          "title": {
+            "en": "Low"
+          }
+        },
+        {
+          "id": "medium",
+          "title": {
+            "en": "Medium"
+          }
+        },
+        {
+          "id": "high",
+          "title": {
+            "en": "High"
+          }
+        }
+      ]
+    },
+    "lymow_dock_route": {
+      "type": "enum",
+      "title": {
+        "en": "Return Route"
+      },
+      "uiComponent": "picker",
+      "icon": "/assets/icons/dock.svg",
+      "getable": true,
+      "setable": true,
+      "values": [
+        {
+          "id": "direct",
+          "title": {
+            "en": "Direct route"
+          }
+        },
+        {
+          "id": "perimeter",
+          "title": {
+            "en": "Follow perimeter"
+          }
+        }
+      ]
+    },
+    "lymow_blade_height": {
+      "type": "number",
+      "title": {
+        "en": "Blade Height"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": true,
+      "min": 20,
+      "max": 100,
+      "step": 5,
+      "units": {
+        "en": "mm"
+      }
+    },
+    "lymow_recharge_bat": {
+      "type": "number",
+      "title": {
+        "en": "Auto-recharge at"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": true,
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "units": {
+        "en": "%"
+      }
+    },
+    "lymow_resume_bat": {
+      "type": "number",
+      "title": {
+        "en": "Auto-resume at"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": true,
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "units": {
+        "en": "%"
+      }
+    },
+    "lymow_auto_recharge": {
+      "type": "boolean",
+      "title": {
+        "en": "Auto Recharge"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": true
+    },
+    "lymow_headlights": {
+      "type": "boolean",
+      "title": {
+        "en": "Headlights"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": true
+    },
+    "lymow_dock_on_error": {
+      "type": "boolean",
+      "title": {
+        "en": "Dock on Error"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": true
+    },
+    "lymow_clean_area": {
+      "type": "number",
+      "title": {
+        "en": "Session Area"
+      },
+      "uiComponent": "sensor",
+      "icon": "/assets/icons/area.svg",
+      "getable": true,
+      "setable": false,
+      "decimals": 0,
+      "units": {
+        "en": "m²"
+      }
+    },
+    "lymow_clean_percent": {
+      "type": "number",
+      "title": {
+        "en": "Session Progress"
+      },
+      "uiComponent": "sensor",
+      "icon": "/assets/icons/percent.svg",
+      "getable": true,
+      "setable": false,
+      "decimals": 0,
+      "units": {
+        "en": "%"
+      }
+    },
+    "lymow_clean_time": {
+      "type": "number",
+      "title": {
+        "en": "Session Time"
+      },
+      "uiComponent": "sensor",
+      "icon": "/assets/icons/clock.svg",
+      "getable": true,
+      "setable": false,
+      "decimals": 0,
+      "units": {
+        "en": "min"
+      }
+    },
+    "lymow_satellites": {
+      "type": "number",
+      "title": {
+        "en": "GPS Satellites"
+      },
+      "uiComponent": "sensor",
+      "icon": "/assets/icons/sat.svg",
+      "getable": true,
+      "setable": false,
+      "decimals": 0
+    },
+    "lymow_gps_precision": {
+      "type": "number",
+      "title": {
+        "en": "GPS Precision"
+      },
+      "uiComponent": "sensor",
+      "icon": "/assets/icons/crosshair.svg",
+      "getable": true,
+      "setable": false,
+      "decimals": 2,
+      "units": {
+        "en": "m"
+      }
+    },
+    "lymow_zone": {
+      "type": "string",
+      "title": {
+        "en": "Current Zone"
+      },
+      "uiComponent": "sensor",
+      "icon": "/assets/icons/rtk.svg",
+      "getable": true,
+      "setable": false
+    },
+    "lymow_charging": {
+      "type": "boolean",
+      "title": {
+        "en": "Charging"
+      },
+      "uiComponent": "sensor",
+      "icon": "/assets/icons/charging.svg",
+      "getable": true,
+      "setable": false
+    },
+    "lymow_lifted": {
+      "type": "boolean",
+      "title": {
+        "en": "Lifted"
+      },
+      "uiComponent": "sensor",
+      "icon": "/assets/icons/lifted.svg",
+      "getable": true,
+      "setable": false
+    },
+    "lymow_mow_zone": {
+      "type": "enum",
+      "title": {
+        "en": "Mow Zone"
+      },
+      "uiComponent": "picker",
+      "icon": "/assets/icons/mowmode.svg",
+      "getable": true,
+      "setable": true,
+      "values": [
+        {
+          "id": "__none__",
+          "title": {
+            "en": "Select a zone…"
+          }
+        },
+        {
+          "id": "__all__",
+          "title": {
+            "en": "Whole lawn"
+          }
+        }
+      ]
+    },
+    "cmd_fwd": {
+      "type": "boolean",
+      "title": {
+        "en": "Drive Forward"
+      },
+      "uiComponent": "button",
+      "icon": "/assets/icons/arrow_up.svg",
+      "getable": false,
+      "setable": true
+    },
+    "cmd_back": {
+      "type": "boolean",
+      "title": {
+        "en": "Drive Backward"
+      },
+      "uiComponent": "button",
+      "icon": "/assets/icons/arrow_down.svg",
+      "getable": false,
+      "setable": true
+    },
+    "cmd_left": {
+      "type": "boolean",
+      "title": {
+        "en": "Turn Left"
+      },
+      "uiComponent": "button",
+      "icon": "/assets/icons/arrow_left.svg",
+      "getable": false,
+      "setable": true
+    },
+    "cmd_right": {
+      "type": "boolean",
+      "title": {
+        "en": "Turn Right"
+      },
+      "uiComponent": "button",
+      "icon": "/assets/icons/arrow_right.svg",
+      "getable": false,
+      "setable": true
+    }
+  },
+  "drivers": [
+    {
+      "id": "mower",
+      "name": {
+        "en": "Lymow Mower"
+      },
+      "class": "other",
+      "energy": {
+        "batteries": [
+          "INTERNAL"
+        ]
+      },
+      "capabilities": [
+        "measure_battery",
+        "lymow_status",
+        "lymow_online",
+        "lymow_error",
+        "lymow_rtk",
+        "cmd_start",
+        "cmd_pause",
+        "cmd_dock",
+        "cmd_stop",
+        "cmd_fwd",
+        "cmd_back",
+        "cmd_left",
+        "cmd_right",
+        "lymow_mow_zone",
+        "lymow_mow_mode",
+        "lymow_volume",
+        "lymow_dock_route",
+        "lymow_clean_area",
+        "lymow_clean_percent",
+        "lymow_clean_time",
+        "lymow_satellites",
+        "lymow_gps_precision",
+        "lymow_zone",
+        "lymow_charging",
+        "lymow_lifted"
+      ],
+      "platforms": [
+        "local"
+      ],
+      "images": {
+        "small": "/drivers/mower/assets/images/small.png",
+        "large": "/drivers/mower/assets/images/large.png",
+        "xlarge": "/drivers/mower/assets/images/xlarge.png"
+      },
+      "pair": [
+        {
+          "id": "start"
+        }
+      ],
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "General"
+          },
+          "children": [
+            {
+              "id": "units",
+              "type": "dropdown",
+              "label": {
+                "en": "Units"
+              },
+              "value": "metric",
+              "hint": {
+                "en": "Unit system for areas and distances. Blade height stays in millimetres (the mower's native unit)."
+              },
+              "values": [
+                {
+                  "id": "metric",
+                  "label": {
+                    "en": "Metric (m², m)"
+                  }
+                },
+                {
+                  "id": "imperial",
+                  "label": {
+                    "en": "Imperial (ft², ft)"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Mowing"
+          },
+          "children": [
+            {
+              "id": "blade_height",
+              "type": "number",
+              "label": {
+                "en": "Blade height"
+              },
+              "value": 40,
+              "units": {
+                "en": "mm"
+              },
+              "attr": {
+                "min": 20,
+                "max": 100,
+                "step": 5
+              },
+              "hint": {
+                "en": "Cutting height in millimetres (20-100)."
+              }
+            },
+            {
+              "id": "dock_on_error",
+              "type": "checkbox",
+              "label": {
+                "en": "Return to dock on error"
+              },
+              "value": false
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Auto-recharge"
+          },
+          "children": [
+            {
+              "id": "auto_recharge",
+              "type": "checkbox",
+              "label": {
+                "en": "Auto recharge and resume"
+              },
+              "value": true
+            },
+            {
+              "id": "recharge_bat",
+              "type": "number",
+              "label": {
+                "en": "Recharge at battery level"
+              },
+              "value": 10,
+              "units": {
+                "en": "%"
+              },
+              "attr": {
+                "min": 1,
+                "max": 100,
+                "step": 1
+              }
+            },
+            {
+              "id": "resume_bat",
+              "type": "number",
+              "label": {
+                "en": "Resume at battery level"
+              },
+              "value": 98,
+              "units": {
+                "en": "%"
+              },
+              "attr": {
+                "min": 1,
+                "max": 100,
+                "step": 1
+              }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Lights"
+          },
+          "children": [
+            {
+              "id": "headlights",
+              "type": "checkbox",
+              "label": {
+                "en": "Headlights on"
+              },
+              "value": false
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Device info"
+          },
+          "children": [
+            {
+              "id": "info_firmware",
+              "type": "label",
+              "label": {
+                "en": "Firmware"
+              },
+              "value": "—"
+            },
+            {
+              "id": "info_ip",
+              "type": "label",
+              "label": {
+                "en": "IP address"
+              },
+              "value": "—"
+            },
+            {
+              "id": "info_serial",
+              "type": "label",
+              "label": {
+                "en": "Serial number"
+              },
+              "value": "—"
+            }
+          ]
+        }
+      ],
+      "connectivity": [
+        "cloud"
+      ]
+    }
+  ],
+  "flow": {
+    "triggers": [
+      {
+        "id": "status_changed",
+        "title": {
+          "en": "Status changed"
+        },
+        "titleFormatted": {
+          "en": "Status changed to [[status]]"
+        },
+        "tokens": [
+          {
+            "name": "status",
+            "type": "string",
+            "title": {
+              "en": "Status"
+            },
+            "example": "mowing"
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=mower"
+          }
+        ]
+      },
+      {
+        "id": "error_occurred",
+        "title": {
+          "en": "An error occurred"
+        },
+        "tokens": [
+          {
+            "name": "error",
+            "type": "string",
+            "title": {
+              "en": "Error"
+            },
+            "example": "Mower Stuck"
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=mower"
+          }
+        ]
+      },
+      {
+        "id": "went_online",
+        "title": {
+          "en": "Went online"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=mower"
+          }
+        ]
+      },
+      {
+        "id": "went_offline",
+        "title": {
+          "en": "Went offline"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=mower"
+          }
+        ]
+      },
+      {
+        "id": "mower_alert",
+        "title": {
+          "en": "An alert occurred"
+        },
+        "titleFormatted": {
+          "en": "Alert [[type]] occurred"
+        },
+        "tokens": [
+          {
+            "name": "event",
+            "type": "string",
+            "title": {
+              "en": "Alert"
+            },
+            "example": "Blade stuck"
+          },
+          {
+            "name": "event_type",
+            "type": "string",
+            "title": {
+              "en": "Alert type"
+            },
+            "example": "blade_stuck"
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=mower"
+          },
+          {
+            "type": "dropdown",
+            "name": "type",
+            "title": {
+              "en": "Which alert"
+            },
+            "values": [
+              {
+                "id": "any",
+                "label": {
+                  "en": "Any alert"
+                }
+              },
+              {
+                "id": "wheel_slip",
+                "label": {
+                  "en": "Wheel slip"
+                }
+              },
+              {
+                "id": "blade_stuck",
+                "label": {
+                  "en": "Blade stuck"
+                }
+              },
+              {
+                "id": "battery_low",
+                "label": {
+                  "en": "Battery low"
+                }
+              },
+              {
+                "id": "dock_failed",
+                "label": {
+                  "en": "Dock failed"
+                }
+              },
+              {
+                "id": "cliff_detected",
+                "label": {
+                  "en": "Cliff detected"
+                }
+              },
+              {
+                "id": "slope_detected",
+                "label": {
+                  "en": "Slope detected"
+                }
+              },
+              {
+                "id": "internal_error",
+                "label": {
+                  "en": "Internal error"
+                }
+              },
+              {
+                "id": "robot_locked",
+                "label": {
+                  "en": "Robot locked"
+                }
+              },
+              {
+                "id": "stop_button_pressed",
+                "label": {
+                  "en": "Stop button pressed"
+                }
+              },
+              {
+                "id": "theft_alarm",
+                "label": {
+                  "en": "Theft alarm"
+                }
+              },
+              {
+                "id": "rain_resume",
+                "label": {
+                  "en": "Rain resume"
+                }
+              },
+              {
+                "id": "mowing_paused",
+                "label": {
+                  "en": "Mowing paused"
+                }
+              },
+              {
+                "id": "firmware_update_success",
+                "label": {
+                  "en": "Firmware updated"
+                }
+              },
+              {
+                "id": "firmware_update_failed",
+                "label": {
+                  "en": "Firmware update failed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "session_complete",
+        "title": {
+          "en": "A mowing session completed"
+        },
+        "titleFormatted": {
+          "en": "Mowing session completed ([[end_type]])"
+        },
+        "tokens": [
+          {
+            "name": "area",
+            "type": "number",
+            "title": {
+              "en": "Area mowed"
+            },
+            "example": 142
+          },
+          {
+            "name": "duration",
+            "type": "number",
+            "title": {
+              "en": "Duration (min)"
+            },
+            "example": 73
+          },
+          {
+            "name": "end_type",
+            "type": "string",
+            "title": {
+              "en": "Ended"
+            },
+            "example": "completed"
+          },
+          {
+            "name": "battery_used",
+            "type": "number",
+            "title": {
+              "en": "Battery used %"
+            },
+            "example": 40
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=mower"
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "id": "start",
+        "title": {
+          "en": "Start mowing"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=mower"
+          }
+        ]
+      },
+      {
+        "id": "pause",
+        "title": {
+          "en": "Pause"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=mower"
+          }
+        ]
+      },
+      {
+        "id": "dock",
+        "title": {
+          "en": "Return to dock"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=mower"
+          }
+        ]
+      },
+      {
+        "id": "stop",
+        "title": {
+          "en": "Stop (cancel task)"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=mower"
+          }
+        ]
+      },
+      {
+        "id": "start_zone",
+        "title": {
+          "en": "Start mowing a zone"
+        },
+        "titleFormatted": {
+          "en": "Start mowing zone [[zone]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=mower"
+          },
+          {
+            "type": "autocomplete",
+            "name": "zone",
+            "title": {
+              "en": "Zone"
+            },
+            "placeholder": {
+              "en": "Select a zone"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "pythonPackages": [
+    "pycognito",
+    "paho-mqtt",
+    "protobuf",
+    "aiohttp",
+    "certifi"
+  ],
+  "widgets": {
+    "drive": {
+      "id": "drive",
+      "name": {
+        "en": "Lymow Drive"
+      },
+      "height": 360,
+      "transparent": false,
+      "settings": [
+        {
+          "id": "device",
+          "type": "devices",
+          "title": {
+            "en": "Mower"
+          },
+          "filter": "driver_id=mower"
+        }
+      ],
+      "api": {
+        "drive": {
+          "method": "POST",
+          "path": "/drive"
+        },
+        "setDeck": {
+          "method": "POST",
+          "path": "/deck"
+        },
+        "getState": {
+          "method": "POST",
+          "path": "/state"
+        }
+      }
+    }
+  }
+}

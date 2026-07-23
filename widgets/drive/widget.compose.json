@@ -1,0 +1,18 @@
+{
+  "name": { "en": "Lymow Drive" },
+  "height": 360,
+  "transparent": false,
+  "settings": [
+    {
+      "id": "device",
+      "type": "devices",
+      "title": { "en": "Mower" },
+      "filter": "driver_id=mower"
+    }
+  ],
+  "api": {
+    "drive": { "method": "POST", "path": "/drive" },
+    "setDeck": { "method": "POST", "path": "/deck" },
+    "getState": { "method": "POST", "path": "/state" }
+  }
+}

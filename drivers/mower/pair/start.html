@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { margin: 0; padding: 4px 2px 16px; }
+    .field { margin: 14px 0; }
+    label.lbl { display:block; font-weight:600; margin-bottom:6px; font-size:14px; }
+    select, input[type=email], input[type=password], input[type=text] {
+      width:100%; padding:11px; border:1px solid #ccc; border-radius:8px;
+      box-sizing:border-box; font-size:15px;
+    }
+    input[type=text] { font-family:monospace; font-size:12px; }
+    .methods { display:flex; gap:10px; }
+    .methods label {
+      flex:1; display:flex; align-items:center; justify-content:center; gap:7px;
+      border:1px solid #ccc; border-radius:8px; padding:11px; cursor:pointer; font-size:14px;
+    }
+    .methods label.sel { border-color:#1a73e8; color:#1a73e8; box-shadow:inset 0 0 0 1px #1a73e8; }
+    .hint { color:#888; font-size:12.5px; margin-top:5px; }
+    a.btn, button {
+      display:block; width:100%; box-sizing:border-box; text-align:center; text-decoration:none;
+      padding:13px; border-radius:8px; font-size:15px; font-weight:600; cursor:pointer;
+      font-family:inherit; margin-top:14px;
+    }
+    #go, #verify { border:none; background:#1a73e8; color:#fff; }
+    #go:hover, #verify:hover { background:#1557b0; }
+    a.btn { border:1px solid #1a73e8; background:#fff; color:#1a73e8; }
+    a.btn:hover { background:#e8f0fe; }
+    #copy { border:1px solid #ccc; background:#fff; color:#444; font-size:13px; padding:9px; margin-top:8px; }
+    .steps { background:#f6f7f9; border-radius:10px; padding:12px 14px; line-height:1.85; font-size:13px; margin-top:16px; }
+    .steps b { color:#1a73e8; }
+    code { background:#e9eaec; border-radius:3px; padding:1px 4px; font-size:12px; word-break:break-all; }
+    #error { color:#c00; margin-top:12px; min-height:18px; font-size:13.5px; }
+    #ok { color:#0d652d; font-size:12.5px; margin-top:6px; }
+  </style>
+</head>
+<body>
+  <div class="field">
+    <label class="lbl" for="region">Region</label>
+    <select id="region">
+      <option value="us-east-2">US East (Ohio)</option>
+      <option value="eu-west-1">Europe (Ireland)</option>
+      <option value="ap-southeast-2">Asia Pacific (Sydney)</option>
+      <option value="ap-east-1">Asia Pacific (Hong Kong)</option>
+    </select>
+    <div class="hint">The region your Lymow account was created in.</div>
+  </div>
+
+  <div class="field">
+    <label class="lbl">Sign-in method</label>
+    <div class="methods">
+      <label id="m-pw" class="sel"><input type="radio" name="method" value="password" checked> Email &amp; Password</label>
+      <label id="m-go"><input type="radio" name="method" value="google"> Google</label>
+    </div>
+  </div>
+
+  <div id="pwFields">
+    <div class="field">
+      <label class="lbl" for="email">Email</label>
+      <input type="email" id="email" autocomplete="username" placeholder="you@example.com">
+    </div>
+    <div class="field">
+      <label class="lbl" for="password">Password</label>
+      <input type="password" id="password" autocomplete="current-password" placeholder="Your Lymow password">
+    </div>
+  </div>
+
+  <button id="go" type="button">Sign in</button>
+
+  <div id="googlePanel" style="display:none">
+    <div class="steps">
+      <b>1.</b> Open the link below <b>in a browser on your computer</b> and sign in with Google.<br>
+      <b>2.</b> It will then fail to open <code>myapp://callback/...</code> - that is expected.<br>
+      <b>3.</b> Copy that failed page's <b>full address</b> from the address bar.<br>
+      <b>4.</b> Paste it below and tap <b>Verify</b>.
+    </div>
+
+    <a class="btn" id="signin" href="#" target="_blank" rel="noopener">Open Google sign-in</a>
+
+    <label class="lbl" for="url">Or copy this link to your computer</label>
+    <input type="text" id="url" readonly onclick="this.select()" value="Loading...">
+    <button id="copy" type="button">Copy link</button>
+    <div id="ok"></div>
+
+    <label class="lbl" for="code">Paste the callback URL (or just the code)</label>
+    <input type="text" id="code" placeholder="myapp://callback/?code=..." autocapitalize="off" autocorrect="off" spellcheck="false">
+    <div class="hint">The code expires in about a minute - paste and verify promptly.</div>
+
+    <button id="verify" type="button">Verify</button>
+  </div>
+
+  <div id="devicePanel" style="display:none">
+    <label class="lbl">Your Lymow mowers</label>
+    <div class="hint" style="margin-bottom:4px">Tap a mower to add it to Homey.</div>
+    <div id="deviceList"></div>
+  </div>
+
+  <div id="error"></div>
+
+  <script type="application/javascript">
+    function $(id) { return document.getElementById(id); }
+    function method() { return document.querySelector('input[name="method"]:checked').value; }
+
+    // Show the mowers returned by the app and let the user add one.
+    // NOTE: this deliberately does NOT use the `list_devices` / `add_devices`
+    // pair templates or view navigation -- in this Homey build every view after
+    // the first renders blank, so we do everything in this one view and call
+    // Homey.createDevice() directly.
+    async function showDevices() {
+      var devices = await Homey.emit('list_devices', {});
+      if (!devices || !devices.length) {
+        $('error').style.color = '#c00';
+        $('error').textContent = 'Signed in, but no mowers came back from the app.';
+        return;
+      }
+      var list = $('deviceList');
+      list.innerHTML = '';
+      devices.forEach(function (d) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = d.name || 'Lymow mower';
+        b.addEventListener('click', async function () {
+          $('error').style.color = '#c00';
+          $('error').textContent = '';
+          try {
+            Homey.showLoadingOverlay();
+            await Homey.createDevice(d);
+            Homey.hideLoadingOverlay();
+            $('error').style.color = '#0d652d';
+            $('error').textContent = 'Added ' + (d.name || 'mower') + '. Finishing...';
+            await Homey.done();
+          } catch (e) {
+            Homey.hideLoadingOverlay();
+            $('error').textContent = (e && e.message) ? e.message : String(e);
+          }
+        });
+        list.appendChild(b);
+      });
+      $('go').style.display = 'none';
+      $('googlePanel').style.display = 'none';
+      $('pwFields').style.display = 'none';
+      $('devicePanel').style.display = 'block';
+    }
+
+    function refresh() {
+      var isGoogle = method() === 'google';
+      $('pwFields').style.display = isGoogle ? 'none' : 'block';
+      $('go').textContent = isGoogle ? 'Continue with Google' : 'Sign in';
+      $('m-pw').className = isGoogle ? '' : 'sel';
+      $('m-go').className = isGoogle ? 'sel' : '';
+      if (!isGoogle) $('googlePanel').style.display = 'none';
+      $('error').textContent = '';
+    }
+
+    Array.prototype.forEach.call(
+      document.querySelectorAll('input[name="method"]'),
+      function (el) { el.addEventListener('change', refresh); }
+    );
+
+    $('go').addEventListener('click', async function () {
+      var region = $('region').value;
+      $('error').style.color = '#c00';
+      $('error').textContent = '';
+      try {
+        if (method() === 'google') {
+          Homey.showLoadingOverlay();
+          var res = await Homey.emit('google_start', { region: region });
+          Homey.hideLoadingOverlay();
+          var url = res && res.url;
+          if (!url) { $('error').textContent = 'Could not build the Google sign-in link.'; return; }
+          $('url').value = url;
+          $('signin').href = url;
+          $('googlePanel').style.display = 'block';
+          $('go').style.display = 'none';
+          return;
+        }
+        Homey.showLoadingOverlay();
+        var lres = await Homey.emit('login', {
+          region: region,
+          email: $('email').value.trim(),
+          password: $('password').value
+        });
+        Homey.hideLoadingOverlay();
+        if (!lres) {
+          $('error').textContent = 'No response from the app (the pair handler did not run).';
+          return;
+        }
+        $('error').style.color = '#0d652d';
+        $('error').textContent = 'Signed in. Found ' + lres.count + ' mower(s).';
+        await showDevices();
+      } catch (e) {
+        Homey.hideLoadingOverlay();
+        $('error').textContent = (e && e.message) ? e.message : String(e);
+      }
+    });
+
+    $('copy').addEventListener('click', function () {
+      var el = $('url');
+      el.select();
+      el.setSelectionRange(0, 99999);
+      var done = false;
+      try { done = document.execCommand('copy'); } catch (e) {}
+      if (!done && navigator.clipboard) {
+        try { navigator.clipboard.writeText(el.value); done = true; } catch (e) {}
+      }
+      $('ok').textContent = done ? 'Link copied. Paste it into a browser on your computer.'
+                                 : 'Select the link above and copy it manually.';
+    });
+
+    $('verify').addEventListener('click', async function () {
+      var code = $('code').value.trim();
+      $('error').style.color = '#c00';
+      $('error').textContent = '';
+      if (!code) { $('error').textContent = 'Paste the callback URL (or the code) first.'; return; }
+      try {
+        Homey.showLoadingOverlay();
+        var vres = await Homey.emit('google_code', { code: code, region: $('region').value });
+        Homey.hideLoadingOverlay();
+        if (!vres) {
+          $('error').textContent = 'No response from the app (the pair handler did not run).';
+          return;
+        }
+        $('error').style.color = '#0d652d';
+        $('error').textContent = 'Signed in. Found ' + vres.count + ' mower(s).';
+        await showDevices();
+      } catch (e) {
+        Homey.hideLoadingOverlay();
+        $('error').textContent = (e && e.message) ? e.message : String(e);
+      }
+    });
+
+    refresh();
+    try { Homey.setTitle('Sign in to Lymow'); } catch (e) {}
+  </script>
+</body>
+</html>

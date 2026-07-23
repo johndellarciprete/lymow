@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    :root { color-scheme: light dark; }
+    body { margin: 0; font-family: -apple-system, system-ui, sans-serif;
+           -webkit-user-select: none; user-select: none; }
+    .wrap { padding: 10px 12px 14px; }
+    .hdr { display: flex; align-items: center; justify-content: space-between;
+           font-size: 13px; margin-bottom: 10px; }
+    .hdr .status { color: #888; }
+    .dot { display:inline-block; width:8px; height:8px; border-radius:50%; background:#bbb; margin-right:5px; vertical-align:1px; }
+    .dot.on { background:#1D9E75; }
+    .pad { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 56px);
+           gap: 8px; max-width: 260px; margin: 0 auto; }
+    .btn { border: none; border-radius: 12px; background: rgba(127,127,127,0.14);
+           font-size: 24px; display: flex; align-items: center; justify-content: center;
+           cursor: pointer; touch-action: none; color: inherit; }
+    .btn:active, .btn.held { background: #1a73e8; color: #fff; }
+    .stop { font-size: 15px; font-weight: 600; }
+    .up { grid-column: 2; grid-row: 1; }
+    .left { grid-column: 1; grid-row: 2; }
+    .stopc { grid-column: 2; grid-row: 2; }
+    .right { grid-column: 3; grid-row: 2; }
+    .down { grid-column: 2; grid-row: 3; }
+    .deck { margin: 14px auto 0; max-width: 260px; }
+    .deck label { font-size: 13px; color: #888; display:flex; justify-content:space-between; }
+    input[type=range] { width: 100%; }
+    #err { color: #c00; font-size: 12px; min-height: 15px; text-align: center; margin-top: 6px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hdr">
+      <span><span class="dot" id="dot"></span><b id="name">Lymow</b></span>
+      <span class="status" id="status">—</span>
+    </div>
+
+    <div class="pad">
+      <button class="btn up"    data-dir="fwd"   aria-label="Forward">&#9650;</button>
+      <button class="btn left"  data-dir="left"  aria-label="Left">&#9664;</button>
+      <button class="btn stop stopc" data-dir="stop" aria-label="Stop">STOP</button>
+      <button class="btn right" data-dir="right" aria-label="Right">&#9654;</button>
+      <button class="btn down"  data-dir="back"  aria-label="Backward">&#9660;</button>
+    </div>
+
+    <div class="deck">
+      <label>Deck height <span id="deckval">— mm</span></label>
+      <input type="range" id="deck" min="20" max="100" step="5" value="40">
+    </div>
+
+    <div id="err"></div>
+  </div>
+
+  <script type="application/javascript">
+    function onHomeyReady(Homey) {
+      Homey.ready({ height: 360 });
+
+      var deviceId = null;
+      try { var ids = Homey.getDeviceIds(); deviceId = (ids && ids[0]) || null; } catch (e) {}
+
+      var errEl = document.getElementById('err');
+      function showErr(m) { errEl.textContent = m || ''; }
+
+      if (!deviceId) {
+        showErr('Open widget settings and choose your mower.');
+      }
+
+      async function call(path, body) {
+        try {
+          return await Homey.api('POST', path, Object.assign({ deviceId: deviceId }, body || {}));
+        } catch (e) {
+          showErr((e && e.message) ? e.message : String(e));
+          return null;
+        }
+      }
+
+      // ── Hold-to-drive ────────────────────────────────────────────────
+      var held = null;         // current direction button element
+      var timer = null;
+
+      function startDrive(el) {
+        if (!deviceId) return;
+        var dir = el.getAttribute('data-dir');
+        showErr('');
+        if (dir === 'stop') { stopDrive(); call('/drive', { dir: 'stop' }); return; }
+        stopDrive();
+        held = el; el.classList.add('held');
+        call('/drive', { dir: dir });                       // fire immediately
+        timer = setInterval(function () { call('/drive', { dir: dir }); }, 250);  // keep sending while held
+      }
+
+      function stopDrive() {
+        if (timer) { clearInterval(timer); timer = null; }
+        if (held) { held.classList.remove('held'); held = null; }
+      }
+
+      function releaseDrive() {
+        if (!held) return;
+        stopDrive();
+        if (deviceId) call('/drive', { dir: 'stop' });      // stop on release
+      }
+
+      var buttons = document.querySelectorAll('.btn');
+      Array.prototype.forEach.call(buttons, function (el) {
+        el.addEventListener('pointerdown', function (ev) { ev.preventDefault(); startDrive(el); });
+        el.addEventListener('pointerup', function (ev) { ev.preventDefault(); releaseDrive(); });
+        el.addEventListener('pointercancel', releaseDrive);
+        el.addEventListener('pointerleave', releaseDrive);
+        el.addEventListener('contextmenu', function (ev) { ev.preventDefault(); });
+      });
+      // Safety: stop if the pointer is released anywhere, or the widget is hidden.
+      window.addEventListener('pointerup', releaseDrive);
+      document.addEventListener('visibilitychange', function () { if (document.hidden) releaseDrive(); });
+
+      // ── Deck height ──────────────────────────────────────────────────
+      var deck = document.getElementById('deck');
+      var deckval = document.getElementById('deckval');
+      deck.addEventListener('input', function () { deckval.textContent = deck.value + ' mm'; });
+      deck.addEventListener('change', function () { if (deviceId) call('/deck', { mm: parseInt(deck.value, 10) }); });
+
+      // ── Status polling ───────────────────────────────────────────────
+      async function refresh() {
+        if (!deviceId) return;
+        var s = await call('/state', {});
+        if (!s || s.ok === false) return;
+        document.getElementById('dot').className = 'dot' + (s.online ? ' on' : '');
+        var parts = [];
+        if (typeof s.battery === 'number') parts.push(Math.round(s.battery) + '%');
+        if (s.status) parts.push(String(s.status));
+        document.getElementById('status').textContent = parts.join(' · ') || '—';
+        if (typeof s.deck === 'number') {
+          deck.value = String(s.deck);
+          deckval.textContent = s.deck + ' mm';
+        }
+      }
+      refresh();
+      setInterval(refresh, 4000);
+    }
+  </script>
+</body>
+</html>
