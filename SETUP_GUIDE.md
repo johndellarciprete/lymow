@@ -4,9 +4,8 @@ A start-to-finish guide for someone **new to Homey and the Homey CLI**. You'll d
 from GitHub, install the tools it needs, put it on your Homey, and pair a mower. Written for
 **Windows**; Mac/Linux notes are called out where they differ.
 
-> Throughout this guide, replace **`<REPO_URL>`** with the GitHub address of this app, e.g.
-> `https://github.com/youraccount/lymow-homey`. The folder it downloads into is called the
-> **app folder** below.
+> This app lives at **<https://github.com/johndellarciprete/lymow>**. The folder it downloads into
+> is called the **app folder** below.
 
 ---
 
@@ -93,8 +92,8 @@ Pick a folder to keep it in (this example uses your user folder) and clone the r
 
 ```powershell
 cd $HOME
-git clone <REPO_URL> lymow-homey
-cd lymow-homey
+git clone https://github.com/johndellarciprete/lymow.git
+cd lymow
 ```
 
 That last folder — where you now are — is the **app folder**. Run all remaining commands from here.
