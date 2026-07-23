@@ -15,9 +15,8 @@ reverse-engineering the official app, and may break if that backend changes.
 - **Flow cards**:
   - Actions: Start, Pause, Dock, Stop, and **Start mowing a zone** (zone autocomplete from the map).
   - Triggers: Status changed, Error occurred, Went online, Went offline.
+  - Remote Control over WiFi.  Move your mower when you are not in bluetooth range.
 
-Not yet ported (planned): camera, GPS map, schedules, clean-mode / auto-recharge /
-headlights / volume settings, remote control, OTA update, session/audio events.
 
 ## Architecture
 
